@@ -1,0 +1,173 @@
+
+org 100h          
+                               
+                                 MOV Ax,0B800H
+                          MOV ES,AX
+                          MOV AH,00H
+                          MOV AL,03H
+                          INT 10H
+                                  
+                           MOV AX,0F48H          
+                                      
+                                      
+                         
+                                      mov cx,40d
+                                      mov di,00h  
+                                      call P
+                                      mov cx,40d
+                                      mov di,0f00h
+                                      call p  
+                                      
+                        
+                          SUB DI,0A0H
+                          MOV CX,24D
+                          
+                          BORDER:  SUB DI,0A0H 
+                                   MOV ES:[DI],AX
+                                   MOV ES:[DI+013cH],AX
+                                   LOOP BORDER
+                                           
+                          MOV DI,0E0CH  
+                          MOV AX,0F2AH            
+                          MOV ES:[DI],AX 
+                          
+                          MOV BX,ES:[DI]
+                          MOV [2000H],BX   
+                          MOV [2002H],0F5EH    
+                          
+                          
+                          MAIN:
+                                  MOV AH,01H
+                                  INT 16H
+                                  JZ  UPDATE
+                                  MOV AH,00H
+                                  INT 16H
+                                  CALL NEXT
+                                         JMP MAIN
+                                         
+                                                  
+                                                    
+NEXT:   
+
+CMP AL,'W'
+JNE DWN     
+CALL UP
+RET   
+
+DWN:    
+CMP AL,'S'
+JNE LFT
+CALL DOWN
+RET    
+
+LFT:    
+CMP AL,'A'
+JNE RHT
+CALL LEFT
+RET    
+
+RHT:    
+CMP AL,'D'
+JNE FR
+CALL RIGHT
+RET
+
+FR:
+CMP AL,'F'
+JNE NEXT
+OR FLAG,10000000B
+CALL FIRE
+RET
+
+                                   
+                          RET                           
+                             
+                          RIGHT:
+                          MOV AX,[2000H]
+                          XCHG AX,ES:[DI+04H]
+                          MOV ES:[DI],AX
+                          ADD DI,04H
+                          MOV AX,ES:[DI]
+                          MOV [2000H],AX
+                          ret
+                          
+                          LEFT:
+                          MOV AX,[2000H]
+                          XCHG AX,ES:[DI-04H]
+                          MOV ES:[DI],AX
+                          SUB DI,04H
+                          MOV AX,ES:[DI]
+                          MOV [2000H],AX
+                          ret   
+                             
+                             
+                          DOWN:   
+                          MOV AX,[2000H]
+                          XCHG AX,ES:[DI+0A0H]
+                          MOV ES:[DI],AX
+                          ADD DI,0A0H
+                          MOV AX,ES:[DI]
+                          MOV [2000H],AX
+                          ret
+                             
+
+                             
+                          UP:
+                          MOV AX,[2000H]
+                          XCHG AX,ES:[DI-0A0H]
+                          MOV ES:[DI],AX
+                          SUB DI,0A0H
+                          MOV AX,ES:[DI]
+                          MOV [2000H],AX
+                          ret
+
+                          FIRE:
+                          MOV BX,DI
+                          SUB DI,0A0H
+                          MOV ES:[DI-0A0H],0F5EH 
+                          MOV SI,PTR
+                          MOV [SI],DI
+                          ADD SI,02H
+                          CMP SI,2068H
+                          JB NOPE
+                          MOV SI,2040H
+                          NOPE:
+                          MOV PTR,SI
+                          MOV DI,BX
+                          RET
+                              
+                       UPDATE: 
+        MOV AX,DI          
+        MOV SI,2040H
+        MOV CX,20D         
+LK:
+        MOV BX,[SI]        
+        CMP BX,0
+        JE SKIP            
+        MOV DI,BX
+        MOV ES:[DI],0700H  
+        SUB BX,00A0H       
+        MOV [SI],BX
+        MOV DI,BX
+        MOV ES:[DI],0F5EH  
+
+SKIP:
+        ADD SI,2
+        LOOP LK 
+        MOV DI,AX
+        JMP MAIN
+
+                              
+                              
+                           P:  
+                                
+                                  MOV ES:[DI],AX
+                                  add DI,04H
+                                  LOOP P      
+                                 
+                                          ret 
+                      
+                           
+                                     
+                                          PTR DW 2040H
+                         FLAG DB 00000000B
