@@ -96,16 +96,20 @@ RET
                                    
                           RET                           
                              
-                          RIGHT:
+                          RIGHT:  
+                          CMP ES:[DI+04H],0548H
+                          JE  R
                           MOV AX,[2000H]
                           XCHG AX,ES:[DI+04H]
                           MOV ES:[DI],AX
                           ADD DI,04H
                           MOV AX,ES:[DI]
                           MOV [2000H],AX
-                          ret
+                        R:  ret
                           
-                          LEFT:
+                          LEFT: 
+                          CMP ES:[DI-04H],0548H
+                          JE  R
                           MOV AX,[2000H]
                           XCHG AX,ES:[DI-04H]
                           MOV ES:[DI],AX
@@ -115,7 +119,9 @@ RET
                           ret   
                              
                              
-                          DOWN:   
+                          DOWN:
+                          CMP ES:[DI+0A0H],0548H
+                          JE  R   
                           MOV AX,[2000H]
                           XCHG AX,ES:[DI+0A0H]
                           MOV ES:[DI],AX
@@ -126,7 +132,9 @@ RET
                              
 
                              
-                          UP:
+                          UP: 
+                          CMP ES:[DI-0A0H],0548H
+                          JE  R
                           MOV AX,[2000H]
                           XCHG AX,ES:[DI-0A0H]
                           MOV ES:[DI],AX
