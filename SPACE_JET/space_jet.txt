@@ -1,4 +1,7 @@
 
+; You may customize this and other start-up templates; 
+; The location of this template is c:\emu8086\inc\0_com_template.txt
+
 org 100h          
                                
                                  MOV Ax,0B800H
@@ -6,8 +9,10 @@ org 100h
                           MOV AH,00H
                           MOV AL,03H
                           INT 10H
-                                  
-                           MOV AX,0F48H          
+                                        
+                                         
+                                         
+                           MOV AX,0548H          
                                       
                                       
                          
@@ -16,24 +21,33 @@ org 100h
                                       call P
                                       mov cx,40d
                                       mov di,0f00h
-                                      call p  
+                                      call p 
+                                      
+                                       
                                       
                         
                           SUB DI,0A0H
-                          MOV CX,24D
+                          MOV CX,24D     
                           
                           BORDER:  SUB DI,0A0H 
                                    MOV ES:[DI],AX
                                    MOV ES:[DI+013cH],AX
                                    LOOP BORDER
+                          MOV AX,0C57H
+                          MOV CX,38D
+                          MOV DI,00A4H
+                          CALL P  
+                            MOV CX,38D
+                          ADD DI,08H
+                          CALL P            
                                            
                           MOV DI,0E0CH  
-                          MOV AX,0F2AH            
+                          MOV AX,0B2AH            
                           MOV ES:[DI],AX 
                           
                           MOV BX,ES:[DI]
                           MOV [2000H],BX   
-                          MOV [2002H],0F5EH    
+                          MOV [2002H],025EH    
                           
                           
                           MAIN:
@@ -122,10 +136,10 @@ RET
                           ret
 
                           FIRE:
-                          MOV BX,DI
+                          MOV BX,DI  
                           SUB DI,0A0H
-                          MOV ES:[DI-0A0H],0F5EH 
-                          MOV SI,PTR
+                          MOV ES:[DI],0A5EH 
+                          MOV SI,PTR 
                           MOV [SI],DI
                           ADD SI,02H
                           CMP SI,2068H
@@ -136,7 +150,8 @@ RET
                           MOV DI,BX
                           RET
                               
-                       UPDATE: 
+                       UPDATE:
+        
         MOV AX,DI          
         MOV SI,2040H
         MOV CX,20D         
@@ -146,10 +161,21 @@ LK:
         JE SKIP            
         MOV DI,BX
         MOV ES:[DI],0700H  
-        SUB BX,00A0H       
-        MOV [SI],BX
+        SUB BX,00A0H
         MOV DI,BX
-        MOV ES:[DI],0F5EH  
+        CMP ES:[DI],0700H
+        JNE ERASE
+        MOV [SI],BX
+        MOV ES:[DI],0A5EH
+        JMP SKIP
+        ERASE:
+        CMP ES:[DI],0548H
+        JE ER
+        MOV ES:[DI],0700H
+        ER:MOV [SI],00H
+        MOV [SI+1H],00H
+      
+          
 
 SKIP:
         ADD SI,2
@@ -166,8 +192,9 @@ SKIP:
                                   LOOP P      
                                  
                                           ret 
-                      
+                                     
+                       PTR DW 2040H
                            
                                      
-                                          PTR DW 2040H
+                                          
                          FLAG DB 00000000B
